@@ -2,83 +2,103 @@ package org.jenkinsci.plugins.buildnamesetter;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.matrix.MatrixAggregatable;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.tasks.BuildWrapper;
-import hudson.tasks.BuildWrapperDescriptor;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.Builder;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 
-/**
- * Set the name twice.
- *
- * Once early on in the build, and another time later on.
- *
- * @author Kohsuke Kawaguchi
- */
-public class BuildNameSetter extends BuildWrapper implements MatrixAggregatable {
+public class BuildNameSetter extends Builder {
 
-    public final String template;
+	public final String template;
 
-    @DataBoundConstructor
-    public BuildNameSetter(String template) {
-        this.template = template;
-    }
+	@DataBoundConstructor
+	public BuildNameSetter(String template) {
+		this.template = template;
+	}
 
-    @Override
-    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
-        setDisplayName(build, listener);
+	@Override
+	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+			BuildListener listener) throws InterruptedException, IOException {
+		return setDisplayName(build, listener);
+	}
 
-        return new Environment() {
-            @Override
-            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-                setDisplayName(build, listener);
-                return true;
-            }
-        };
-    }
+	@Override
+	public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
+		boolean result;
+		try {
+			result = setDisplayName(build, listener);
+		} catch (Exception e) {
+			result = false;
+			e.printStackTrace();
+		}
+		return result;
+	}
 
-    private void setDisplayName(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-        try {
-            build.setDisplayName(TokenMacro.expandAll(build, listener, template));
-        } catch (MacroEvaluationException e) {
-            listener.getLogger().println(e.getMessage());
-        }
-    }
+	private boolean setDisplayName(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+		boolean result;
+		try {
+			build.setDisplayName(TokenMacro.expandAll(build, listener, template));
+			result = true;
+		} catch (MacroEvaluationException e) {
+			listener.getLogger().println(e.getMessage());
+			result = false;
+		}
+		return result;
+	}
 
-    public MatrixAggregator createAggregator(MatrixBuild build, Launcher launcher, BuildListener listener) {
-        return new MatrixAggregator(build,launcher,listener) {
-            @Override
-            public boolean startBuild() throws InterruptedException, IOException {
-                setDisplayName(build,listener);
-                return super.startBuild();
-            }
+	public MatrixAggregator createAggregator(MatrixBuild build, Launcher launcher, BuildListener listener) {
+		return new MatrixAggregator(build, launcher, listener) {
+			@Override
+			public boolean startBuild() throws InterruptedException, IOException {
+				setDisplayName(build, listener);
+				return super.startBuild();
+			}
 
-            @Override
-            public boolean endBuild() throws InterruptedException, IOException {
-                setDisplayName(build,listener);
-                return super.endBuild();
-            }
-        };
-    }
+			@Override
+			public boolean endBuild() throws InterruptedException, IOException {
+				setDisplayName(build, listener);
+				return super.endBuild();
+			}
+		};
+	}
 
-    @Extension
-    public static class DescriptorImpl extends BuildWrapperDescriptor {
-        @Override
-        public boolean isApplicable(AbstractProject<?, ?> item) {
-            return true;
-        }
+	@Extension
+	public static final class DescriptorImpl extends
+			BuildStepDescriptor<Builder> {
 
-        @Override
-        public String getDisplayName() {
-            return "Set Build Name";
-        }
-    }
+		public DescriptorImpl() {
+			super(BuildNameSetter.class);
+		}
+
+		@Override
+		public String getDisplayName() {
+			return "Set Build Name";
+		}
+
+		@Override
+		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+			return true;
+		}
+
+		@Override
+		public Builder newInstance(StaplerRequest req, JSONObject formData)
+				throws FormException {
+			return req.bindJSON(BuildNameSetter.class, formData);
+		}
+	}
+
+	@Override
+	public DescriptorImpl getDescriptor() {
+		return (DescriptorImpl) super.getDescriptor();
+	}
 }

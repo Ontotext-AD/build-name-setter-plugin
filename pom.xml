@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.480.3</version>
+    <version>1.560</version>
   </parent>
 
   <artifactId>build-name-setter</artifactId>
@@ -14,11 +15,16 @@
 
   <developers>
     <developer>
-      <id>kohsuke</id>
-      <name>Kohsuke Kawaguchi</name>
-      <email>kkawaguchi@cloudbees.com</email>
+      <id>doino-gretchenliev</id>
+      <name>Doino Gretchenliev</name>
+      <email>doino-gretchenliev@ontotext.com</email>
     </developer>
   </developers>
+
+  <organization>
+    <name>Ontotext</name>
+    <url>http://www.ontotext.com</url>
+  </organization>
 
   <dependencies>
     <dependency>
@@ -27,51 +33,21 @@
       <version>1.5.1</version>
       <optional>true</optional>
     </dependency>
-  </dependencies>
-
-  <!--
-  <dependencies>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-war</artifactId>
-      <version>${jenkins.version}</version>
-      <type>war</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-core</artifactId>
-      <version>${jenkins.version}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.jenkins-ci.main</groupId>
       <artifactId>maven-plugin</artifactId>
-      <version>${jenkins.version}</version>
-      <scope>test</scope>
+      <version>2.0</version>
     </dependency>
     <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>ui-samples-plugin</artifactId>
-      <version>${jenkins.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-test-harness</artifactId>
-      <version>${jenkins.version}</version>
-      <scope>test</scope>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>release</artifactId>
+      <version>2.5.3</version>
     </dependency>
   </dependencies>
 
-  <properties>
-    <jenkins.version>1.396</jenkins.version>
-  </properties>
-  -->
-  
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/build-name-setter-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/build-name-setter-plugin.git</developerConnection>
+    <connection>scm:git:git://github.com/Ontotext-AD/build-name-setter-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:Ontotext-AD/build-name-setter-plugin.git</developerConnection>
   </scm>
 
   <repositories>
@@ -81,11 +57,11 @@
     </repository>
   </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>  
 
